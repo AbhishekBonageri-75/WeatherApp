@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OpenWeather App</string>
+    <string name="sunrise">Sunrise:</string>
 </resources>
