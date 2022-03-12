@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -37,12 +38,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if(item.getItemId() == R.id.opt_temp_format){
             Toast.makeText(this, "Temp_selected", Toast.LENGTH_SHORT).show();
-            int[] images = {R.drawable.units_c,R.drawable.units_f};
+//            int[] images = {R.drawable.units_c,R.drawable.units_f};
             if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_c).getConstantState())){
                 item.setIcon(R.drawable.units_f);
             }
