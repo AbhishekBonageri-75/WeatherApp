@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,51 +23,39 @@ import java.text.MessageFormat;
 
 public class Activity2 extends AppCompatActivity {
 
-    TextView tv ;
+    private TextView tv , lati , dailyy ;
     private RequestQueue queue;
-    private static final String weatherurl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
+    private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
         tv=findViewById(R.id.weather_data);
+        lati = findViewById(R.id.lat);
+        dailyy=findViewById(R.id.daily);
         queue = Volley.newRequestQueue(this);
 
     }
 
-    public void fetchdata(View view){
-
-        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+    public void fetchData(View view){
+        queue = Volley.newRequestQueue(Activity2.this);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, weatherUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    tv.setText(MessageFormat.format("Response: {0}", response.toString()));
-                    JSONArray weather = response.getJSONArray("weather");
-                    String icon = ((JSONObject) weather.get(0)).getString("icon");
-//                    runOnUiThread(() -> getIcon(icon));
-//                    setTitle("Duration: " + (System.currentTimeMillis() - start));
-                } catch (Exception e) {
-                    tv.setText(MessageFormat.format("Response: {0}", e.getMessage()));
-                }
-            }
-        };
-        Response.ErrorListener error = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try {
-                    JSONObject jsonObject = new JSONObject(new String(error.networkResponse.data));
-                    tv.setText(MessageFormat.format("Error: {0}", jsonObject.toString()));
-//                    setTitle("Duration: " + (System.currentTimeMillis() - start));
+                    lati.setText(response.getString("lat").toString());
+                    JSONArray dailye = response.getJSONArray("daily");
+                    dailyy.setText(dailye.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-        };
-        // Request a string response from the provided URL.
-        JsonObjectRequest jsonObjectRequest =
-                new JsonObjectRequest(Request.Method.GET, weatherurl,
-                        null, listener, error);
-        // Add the request to the RequestQueue.
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(Activity2.this, "Error in data loading", Toast.LENGTH_SHORT).show();
+            }
+        });
         queue.add(jsonObjectRequest);
     }
 }
