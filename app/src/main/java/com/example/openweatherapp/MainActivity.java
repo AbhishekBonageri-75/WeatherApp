@@ -1,5 +1,7 @@
 package com.example.openweatherapp;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +14,13 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -35,9 +40,12 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
+    TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
     RecyclerView recyclerView;
     Adapter adapter;
     List<Weather> list;
+    public  JSONObject current_data = new JSONObject();
     private RequestQueue queue;
     private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
 
@@ -46,7 +54,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        CurCityState = findViewById(R.id.city_state);
+        CurCityTime = findViewById(R.id.city_time);
         recyclerView = findViewById(R.id.recyclerview);
+        CurSunrise = findViewById(R.id.cur_sunrise);
+        CurSunset = findViewById(R.id.cur_sunset);
+        CurHumidity = findViewById(R.id.cur_humidity);
+        CurTemp = findViewById(R.id.cur_temp);
+        CurFeelsLike = findViewById(R.id.cur_feels_like);
+        CurWind= findViewById(R.id.cur_winddpeed_winddeg_windgust);
+        CurUvi= findViewById(R.id.cur_uvi);
+        CurVisibility= findViewById(R.id.cur_visibility);
         list = new ArrayList<>();
 
 
@@ -60,22 +78,13 @@ public class MainActivity extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, weatherUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                for(int i=0 ; i < response.length();i++){
-                    try {
-                        JSONObject weatherObject  = response.getJSONObject(String.valueOf(i));
-                        Weather weather = new Weather();
-                        weather.setDay(weatherObject.getString("hourly[i].dt"));
-                        weather.setDescription(weatherObject.getString("hourly[i].weather.description"));
-                        weather.setTemperature(weatherObject.getString("hourly[i].temp"));
-                        weather.setTime(weatherObject.getString("hourly[i].dt"));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    current_data = response.getJSONObject("current");
+                    CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
+                    setdata();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                adapter = new Adapter(getApplicationContext(),list);
-                recyclerView.setAdapter(adapter);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -154,5 +163,19 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void setdata() throws JSONException {
+//        CurCityState.setText(response.getString("lon"));//+"--"+current_data.getString("lon"));
+        CurCityTime.setText(current_data.getString("dt"));
+        CurSunrise.setText(current_data.getString("sunrise"));
+        CurSunset.setText(current_data.getString("sunset"));
+        CurHumidity.setText(current_data.getString("humidity")+"%");
+        CurFeelsLike.setText(current_data.getString("feels_like"));
+        CurTemp.setText(current_data.getString("temp"));
+        CurUvi.setText(current_data.getString("uvi"));
+        CurVisibility.setText(current_data.getString("visibility"));
+        CurWind.setText(current_data.getString("wind_speed")+"/"+current_data.getString("wind_deg")+"/"+current_data.getString("wind_gust"));
+
     }
 }

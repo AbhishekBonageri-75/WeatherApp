@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,11 +18,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.MessageFormat;
-
 public class Activity2 extends AppCompatActivity {
 
-    private TextView tv , lati , dailyy ;
+    private TextView tv , lati , dailyy  ,  current;
     private RequestQueue queue;
     private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
     @Override
@@ -33,6 +30,7 @@ public class Activity2 extends AppCompatActivity {
         tv=findViewById(R.id.weather_data);
         lati = findViewById(R.id.lat);
         dailyy=findViewById(R.id.daily);
+        current=findViewById(R.id.current);
         queue = Volley.newRequestQueue(this);
 
     }
@@ -43,9 +41,18 @@ public class Activity2 extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    lati.setText(response.getString("lat").toString());
                     JSONArray dailye = response.getJSONArray("daily");
+                  lati.setText(response.getString("lat"));
+//                    lati.setText("hello");
+
                     dailyy.setText(dailye.toString());
+
+                    JSONArray cur = response.getJSONArray("current");
+//                  JSONObject obj = cur.getJSONObject(0);
+//                  String cr = obj.getString("dt").toString();
+
+                    tv.setText(dailye.toString());
+                    current.setText(dailye.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
