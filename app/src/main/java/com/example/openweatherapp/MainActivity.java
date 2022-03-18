@@ -1,11 +1,8 @@
 package com.example.openweatherapp;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -14,12 +11,10 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
+    TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
     RecyclerView recyclerView;
     Adapter adapter;
     List<Weather> list;
-    public  JSONObject current_data = new JSONObject();
+//    public  JSONObject current_data = new JSONObject();
     private RequestQueue queue;
     private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
 
@@ -65,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         CurWind= findViewById(R.id.cur_winddpeed_winddeg_windgust);
         CurUvi= findViewById(R.id.cur_uvi);
         CurVisibility= findViewById(R.id.cur_visibility);
+        CurWeatherDescription=findViewById(R.id.cur_weather_description);
+        DailyMorn = findViewById(R.id.d0_temp_morn);
+        DailyDay = findViewById(R.id.d0_temp_day);
+        DailyEve = findViewById(R.id.d0_temp_eve);
+        DailyNight = findViewById(R.id.d0_temp_night);
         list = new ArrayList<>();
 
 
@@ -79,9 +80,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    current_data = response.getJSONObject("current");
-                    CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
-                    setdata();
+                    //Current data
+                    JSONObject current_data = response.getJSONObject("current");
+
+                    //Current.Weather data
+                    JSONArray weatherArray = current_data.getJSONArray("weather");
+                    JSONObject weatherObject = weatherArray.getJSONObject(0);
+
+                    //Daily data.
+                    JSONArray dailyArray = response.getJSONArray("daily");
+                    JSONObject dailyObject = dailyArray.getJSONObject(0);
+                    JSONObject dailyTempObject = dailyObject.getJSONObject("temp");
+
+
+//                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.toString(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "Daily.Array:"+dailyArray.getString(0).toString(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.getString("morn"), Toast.LENGTH_LONG).show();
+
+                    setdata(response,current_data,weatherObject,dailyTempObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -93,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         queue.add(jsonObjectRequest);
-
-
     }
 
     @Override
@@ -165,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void setdata() throws JSONException {
-//        CurCityState.setText(response.getString("lon"));//+"--"+current_data.getString("lon"));
+    public void setdata(JSONObject response,JSONObject current_data,JSONObject weatherObject,JSONObject dailyTempObject ) throws JSONException {
+        CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
         CurCityTime.setText(current_data.getString("dt"));
         CurSunrise.setText(current_data.getString("sunrise"));
         CurSunset.setText(current_data.getString("sunset"));
@@ -175,7 +189,13 @@ public class MainActivity extends AppCompatActivity {
         CurTemp.setText(current_data.getString("temp"));
         CurUvi.setText(current_data.getString("uvi"));
         CurVisibility.setText(current_data.getString("visibility"));
-        CurWind.setText(current_data.getString("wind_speed")+"/"+current_data.getString("wind_deg")+"/"+current_data.getString("wind_gust"));
-
+        CurWeatherDescription.setText(weatherObject.getString("description"));
+        CurWind.setText(current_data.getString("wind_speed")+"/"+ current_data.getString("wind_deg")+"/"+ current_data.getString("wind_gust"));
+        Toast.makeText(MainActivity.this, "Weather.Icon:"+weatherObject.getString("icon"), Toast.LENGTH_LONG).show();
+        //setting daily[0].temp data
+        DailyMorn.setText(dailyTempObject.getString("morn"));
+        DailyDay.setText(dailyTempObject.getString("day"));
+        DailyEve.setText(dailyTempObject.getString("eve"));
+        DailyNight.setText(dailyTempObject.getString("night"));
     }
 }
