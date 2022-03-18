@@ -47,7 +47,7 @@
 
     <TextView
         android:id="@+id/d0.temp.night"
-        android:layout_width="38dp"
+        android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_marginStart="328dp"
         android:layout_marginTop="136dp"
@@ -80,7 +80,7 @@
 
     <TextView
         android:id="@+id/d0.temp.eve"
-        android:layout_width="38dp"
+        android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_marginStart="212dp"
         android:layout_marginTop="136dp"
@@ -103,7 +103,7 @@
 
     <TextView
         android:id="@+id/d0.temp.day"
-        android:layout_width="38dp"
+        android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_marginStart="108dp"
         android:layout_marginTop="136dp"
@@ -249,7 +249,7 @@
 
     <TextView
         android:id="@+id/cur_temp"
-        android:layout_width="73dp"
+        android:layout_width="wrap_content"
         android:layout_height="80dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
@@ -318,7 +318,7 @@
 
     <TextView
         android:id="@+id/d0.temp.morn"
-        android:layout_width="38dp"
+        android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="136dp"
