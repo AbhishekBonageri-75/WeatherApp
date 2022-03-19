@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Gravity;
@@ -32,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -128,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
 //                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.toString(), Toast.LENGTH_SHORT).show();
 //                    Toast.makeText(MainActivity.this, "Daily.Array:"+dailyArray.getString(0).toString(), Toast.LENGTH_SHORT).show();
 //                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.getString("morn"), Toast.LENGTH_LONG).show();
-                    CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
+//                    CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
+                    CurCityState.setText(GetCity());//GetCity();
                     setdata(current_data,weatherObject,dailyTempObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -141,6 +145,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         queue.add(jsonObjectRequest);
+    }
+
+    public String GetCity(){
+        StringBuilder sb = new StringBuilder();
+        String citystate="";
+        List<Address> addresses = null;
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            double lat = Double.parseDouble(t_response.getString("lat"));
+            double lon = Double.parseDouble(t_response.getString("lon"));
+            addresses = geocoder.getFromLocation(lat, lon,10);
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+        for (Address ad : addresses) {
+
+            String a = String.format("%s %s ",
+
+                    (ad.getLocality() == null ? "" : ad.getLocality()),
+                    (ad.getCountryName() == null ? "" : ad.getAdminArea()));
+
+
+            if (!a.trim().isEmpty())
+                sb.append("").append(a.trim());
+            break;
+//            sb.append("\n");
+        }
+
+//        Toast.makeText(this, "citystate: "+sb.toString(), Toast.LENGTH_SHORT).show();
+        citystate = sb.toString();
+        return citystate;
     }
 
     @Override
