@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -16,6 +17,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,8 +32,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
     TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
+    ImageView icon , icon1 ,icon2,icon3,icon4,icon5,icon6;
+    JSONObject current_data,weatherObject,dailyTempObject,t_response;
+//    JSONObject weatherObject;
+//    JSONObject dailyTempObject;
     RecyclerView recyclerView;
 //    SwipeRefreshLayout swipeRefreshLayout;
 
@@ -70,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
         DailyDay = findViewById(R.id.d0_temp_day);
         DailyEve = findViewById(R.id.d0_temp_eve);
         DailyNight = findViewById(R.id.d0_temp_night);
+        icon = findViewById(R.id.weather_icon);
+        icon2 = findViewById(R.id.temperature_icon_2);
+        icon3 = findViewById(R.id.temperature_icon_3);
+        icon4 = findViewById(R.id.temperature_icon_4);
+        icon5 = findViewById(R.id.temperature_icon_5);
+        icon6 = findViewById(R.id.temperature_icon_6);
+        icon1 = findViewById(R.id.temperature_icon_1);
         list = new ArrayList<>();
 
 
@@ -94,24 +111,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    t_response=response;
                     //Current data
-                    JSONObject current_data = response.getJSONObject("current");
+                    current_data = response.getJSONObject("current");
 
                     //Current.Weather data
                     JSONArray weatherArray = current_data.getJSONArray("weather");
-                    JSONObject weatherObject = weatherArray.getJSONObject(0);
+                    weatherObject = weatherArray.getJSONObject(0);
 
                     //Daily data.
                     JSONArray dailyArray = response.getJSONArray("daily");
                     JSONObject dailyObject = dailyArray.getJSONObject(0);
-                    JSONObject dailyTempObject = dailyObject.getJSONObject("temp");
+                    dailyTempObject = dailyObject.getJSONObject("temp");
 
 
 //                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.toString(), Toast.LENGTH_SHORT).show();
 //                    Toast.makeText(MainActivity.this, "Daily.Array:"+dailyArray.getString(0).toString(), Toast.LENGTH_SHORT).show();
 //                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.getString("morn"), Toast.LENGTH_LONG).show();
-
-                    setdata(response,current_data,weatherObject,dailyTempObject);
+                    CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
+                    setdata(current_data,weatherObject,dailyTempObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -133,16 +151,29 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)  {
 
         if(item.getItemId() == R.id.opt_temp_format){
             Toast.makeText(this, "Temp_selected", Toast.LENGTH_SHORT).show();
 //            int[] images = {R.drawable.units_c,R.drawable.units_f};
             if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_c).getConstantState())){
                 item.setIcon(R.drawable.units_f);
+                setTempIcons();
+
+                try {
+                    setdata(current_data,weatherObject,dailyTempObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             else if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_f).getConstantState())){
                 item.setIcon(R.drawable.units_c);
+                setTempIconsC();
+                try {
+                    setCelData(current_data,weatherObject,dailyTempObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             else{
                 item.setIcon(R.drawable.units_f);
@@ -165,6 +196,22 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setTempIcons() {
+        icon1.setImageResource(R.drawable.units_f);
+        icon2.setImageResource(R.drawable.units_f);
+        icon3.setImageResource(R.drawable.units_f);
+        icon4.setImageResource(R.drawable.units_f);
+        icon5.setImageResource(R.drawable.units_f);
+        icon6.setImageResource(R.drawable.units_f);
+    }
+    private void setTempIconsC() {
+        icon1.setImageResource(R.drawable.units_c);
+        icon2.setImageResource(R.drawable.units_c);
+        icon3.setImageResource(R.drawable.units_c);
+        icon4.setImageResource(R.drawable.units_c);
+        icon5.setImageResource(R.drawable.units_c);
+        icon6.setImageResource(R.drawable.units_c);
+    }
 
 
     public void generate_dialogue(){
@@ -194,23 +241,94 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void setdata(JSONObject response,JSONObject current_data,JSONObject weatherObject,JSONObject dailyTempObject ) throws JSONException {
-        CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
-        CurCityTime.setText(current_data.getString("dt"));
+    public void setdata(JSONObject current_data,JSONObject weatherObject,JSONObject dailyTempObject ) throws JSONException {
+        int id ;
+        String w_icon="";
+
+//        CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
+        CurCityTime.setText(convertTime(Long.parseLong(current_data.getString("dt")),1));
         CurSunrise.setText(current_data.getString("sunrise"));
         CurSunset.setText(current_data.getString("sunset"));
         CurHumidity.setText(current_data.getString("humidity")+"%");
-        CurFeelsLike.setText(current_data.getString("feels_like"));
-        CurTemp.setText(current_data.getString("temp"));
+        CurFeelsLike.setText(""+convertTemp(current_data.getString("feels_like")));
+        CurTemp.setText(""+convertTemp(current_data.getString("temp")));
+//        CurTemp.setText(current_data.getString("temp"));
         CurUvi.setText(current_data.getString("uvi"));
         CurVisibility.setText(current_data.getString("visibility"));
         CurWeatherDescription.setText(weatherObject.getString("description"));
         CurWind.setText(current_data.getString("wind_speed")+"/"+ current_data.getString("wind_deg")+"/"+ current_data.getString("wind_gust"));
         Toast.makeText(MainActivity.this, "Weather.Icon:"+weatherObject.getString("icon"), Toast.LENGTH_LONG).show();
+
+        w_icon = "_"+weatherObject.getString("icon");
+        id = fetchIconId(w_icon);
+
+        icon.setImageResource(id);
         //setting daily[0].temp data
-        DailyMorn.setText(dailyTempObject.getString("morn"));
-        DailyDay.setText(dailyTempObject.getString("day"));
-        DailyEve.setText(dailyTempObject.getString("eve"));
-        DailyNight.setText(dailyTempObject.getString("night"));
+        DailyMorn.setText(""+convertTemp(dailyTempObject.getString("morn")));
+        DailyDay.setText(""+convertTemp(dailyTempObject.getString("day")));
+        DailyEve.setText(""+convertTemp(dailyTempObject.getString("eve")));
+        DailyNight.setText(""+convertTemp(dailyTempObject.getString("night")));
+
+    }
+    private void setCelData(JSONObject current_data, JSONObject weatherObject, JSONObject dailyTempObject) throws JSONException {
+        CurTemp.setText(""+convertToC(current_data.getString("temp")));
+        CurFeelsLike.setText(""+convertToC(current_data.getString("feels_like")));
+        //setting daily[0].temp data
+        DailyMorn.setText(""+convertToC(dailyTempObject.getString("morn")));
+        DailyDay.setText(""+convertToC(dailyTempObject.getString("day")));
+        DailyEve.setText(""+convertToC(dailyTempObject.getString("eve")));
+        DailyNight.setText(""+convertToC(dailyTempObject.getString("night")));
+    }
+
+    private int fetchIconId(String w_icon) {
+
+        Toast.makeText(MainActivity.this, "Weather.Icon:"+w_icon, Toast.LENGTH_LONG).show();
+        Context context = icon.getContext();
+        int id = context.getResources().getIdentifier(w_icon , "drawable" , context.getOpPackageName());
+        Toast.makeText(MainActivity.this, "ID:"+id, Toast.LENGTH_LONG).show();
+        return id;
+    }
+
+    private int convertTemp(String Skelvin ){
+        float kelvin=0;
+        MenuItem i=null;
+//        i.getItemId();
+        Toast.makeText(this, "Type= "+Skelvin.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+        kelvin = Float.parseFloat(Skelvin);
+        int f=0;
+        f= (int) ((((kelvin-273.15)*9)/5)+32);
+        return f;
+    }
+    private int convertToC(String Skelvin){
+        float kelvin=0;
+        MenuItem i=null;
+//        i.getItemId();
+        Toast.makeText(this, "Type= "+Skelvin.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+        kelvin = Float.parseFloat(Skelvin);
+        int f=0;
+        f = (int) (kelvin-273.15);
+        return f;
+    }
+    private String convertTime(long dt , int i){
+        LocalDateTime ldt = LocalDateTime.ofEpochSecond(dt + timezone_offset(), 0, ZoneOffset.UTC);
+        String formattedTimeString="";
+        switch (i){
+            case 1: DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE MMM dd h:mm a, yyyy", Locale.getDefault());
+                    formattedTimeString = ldt.format(dtf);
+                    break;
+            default:
+                Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
+        }
+        return formattedTimeString;
+    }
+
+    private long timezone_offset() {
+        int l = 0;
+        try {
+            l = Integer.parseInt(t_response.getString("timezone_offset"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return l;
     }
 }
