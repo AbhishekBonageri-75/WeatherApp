@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
     TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
     RecyclerView recyclerView;
+//    SwipeRefreshLayout swipeRefreshLayout;
+
+//    int count = 0;
     Adapter adapter;
     List<Weather> list;
 //    public  JSONObject current_data = new JSONObject();
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//        swipeRefreshLayout = findViewById(R.id.swiperefresh);
         CurCityState = findViewById(R.id.city_state);
         CurCityTime = findViewById(R.id.city_time);
         recyclerView = findViewById(R.id.recyclerview);
@@ -69,9 +73,19 @@ public class MainActivity extends AppCompatActivity {
         list = new ArrayList<>();
 
 
+
         //Changing the action bar colour
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.purple_500)));
 
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                count += 1;
+//                Toast.makeText(MainActivity.this, "Refresh"+count, Toast.LENGTH_SHORT).show();
+//                onCreate(new Bundle());
+//                swipeRefreshLayout.setRefreshing(false);
+//            }
+//        });
 
         //Loading json data using volley
         queue = Volley.newRequestQueue(this);
@@ -137,7 +151,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.opt_calendar){
 
-            Intent intent = new Intent(MainActivity.this,Activity2.class);
+//            Intent intent = new Intent(MainActivity.this,Activity2.class);
+            Intent intent = new Intent(MainActivity.this,WeekWeather.class);
             startActivity(intent);
         }
         else if(item.getItemId() == R.id.opt_location){
