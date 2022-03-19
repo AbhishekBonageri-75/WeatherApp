@@ -240,15 +240,15 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
+    @SuppressLint("SetTextI18n")
     public void setdata(JSONObject current_data,JSONObject weatherObject,JSONObject dailyTempObject ) throws JSONException {
         int id ;
         String w_icon="";
 
 //        CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
         CurCityTime.setText(convertTime(Long.parseLong(current_data.getString("dt")),1));
-        CurSunrise.setText(current_data.getString("sunrise"));
-        CurSunset.setText(current_data.getString("sunset"));
+        CurSunrise.setText(convertTime(Long.parseLong(current_data.getString("sunrise")),2));
+        CurSunset.setText(convertTime(Long.parseLong(current_data.getString("sunset")),3));
         CurHumidity.setText(current_data.getString("humidity")+"%");
         CurFeelsLike.setText(""+convertTemp(current_data.getString("feels_like")));
         CurTemp.setText(""+convertTemp(current_data.getString("temp")));
@@ -270,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
         DailyNight.setText(""+convertTemp(dailyTempObject.getString("night")));
 
     }
+    @SuppressLint("SetTextI18n")
     private void setCelData(JSONObject current_data, JSONObject weatherObject, JSONObject dailyTempObject) throws JSONException {
         CurTemp.setText(""+convertToC(current_data.getString("temp")));
         CurFeelsLike.setText(""+convertToC(current_data.getString("feels_like")));
@@ -312,9 +313,15 @@ public class MainActivity extends AppCompatActivity {
     private String convertTime(long dt , int i){
         LocalDateTime ldt = LocalDateTime.ofEpochSecond(dt + timezone_offset(), 0, ZoneOffset.UTC);
         String formattedTimeString="";
+        DateTimeFormatter dtf;
         switch (i){
-            case 1: DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE MMM dd h:mm a, yyyy", Locale.getDefault());
+            case 1: dtf = DateTimeFormatter.ofPattern("EEE MMM dd h:mm a, yyyy", Locale.getDefault());
                     formattedTimeString = ldt.format(dtf);
+                    break;
+            case 2:
+            case 3:
+                dtf = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault());
+                formattedTimeString = ldt.format(dtf);
                     break;
             default:
                 Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
