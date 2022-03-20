@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MyWeekViewHolder extends RecyclerView.ViewHolder {
 
     TextView day_date , high_low, description , precip , uvi ,morn , day , eve, night;
-//    ImageView image_icon;
+    ImageView image_icon;
 
 
     public  MyWeekViewHolder( View itemView) {
@@ -25,6 +25,6 @@ public class MyWeekViewHolder extends RecyclerView.ViewHolder {
         day = itemView.findViewById(R.id.week_row_temp_day);
         eve = itemView.findViewById(R.id.week_row_temp_eve);
         night = itemView.findViewById(R.id.week_row_temp_night);
-//        image_icon = itemView.findViewById(R.id.week_row_icon);
+        image_icon = itemView.findViewById(R.id.week_row_icon);
     }
 }

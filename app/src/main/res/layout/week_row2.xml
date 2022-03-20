@@ -285,4 +285,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.75" />
+
+    <ImageView
+        android:id="@+id/week_row_icon"
+        android:layout_width="119dp"
+        android:layout_height="108dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline18"
+        app:layout_constraintTop_toTopOf="@+id/guideline9"
+        app:srcCompat="@drawable/_01d" />
 </androidx.constraintlayout.widget.ConstraintLayout>

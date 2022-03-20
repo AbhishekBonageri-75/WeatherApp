@@ -22,6 +22,7 @@ import java.util.List;
 public class WeekWeather extends AppCompatActivity  implements View.OnClickListener{
 
     private List<Weather> weatherList = new ArrayList<>();
+    String icon;
     private String morn , day , eve, night;
     private String day_date , high_low, description , precip , uvi;
     TextView textView;
@@ -102,6 +103,8 @@ public class WeekWeather extends AppCompatActivity  implements View.OnClickListe
                 night = dailyTemp.getString("night");
 
                 description = dailyWeatherObj.getString("description");
+                icon = dailyWeatherObj.getString("icon");
+
 
 
 
@@ -109,7 +112,7 @@ public class WeekWeather extends AppCompatActivity  implements View.OnClickListe
                 e.printStackTrace();
             }
 //            Toast.makeText(this, "_"+day_date+high_low, Toast.LENGTH_SHORT).show();
-            weatherList.add(new Weather(day_date, high_low , description , precip , uvi , morn,day,eve,night));
+            weatherList.add(new Weather(day_date, high_low , description , precip , uvi , morn,day,eve,night,icon));
         }
 
 

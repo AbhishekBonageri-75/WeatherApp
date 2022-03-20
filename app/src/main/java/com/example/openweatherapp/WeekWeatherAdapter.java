@@ -1,5 +1,6 @@
 package com.example.openweatherapp;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,10 @@ public class WeekWeatherAdapter extends RecyclerView.Adapter<MyWeekViewHolder> {
         holder.day.setText(weather.getDay());
         holder.eve.setText(weather.getEve());
         holder.night.setText(weather.getNight());
-//        holder.image_icon.setText(weather.getImage_icon());
+        String img = weather.getImage_icon();
+        Context context = holder.image_icon.getContext();
+        int id = context.getResources().getIdentifier(img , "drawable" , context.getOpPackageName());
+        holder.image_icon.setImageResource(id);
 
     }
 

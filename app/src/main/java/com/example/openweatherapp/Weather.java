@@ -2,16 +2,16 @@ package com.example.openweatherapp;
 
 public class Weather {
     private String day_date , high_low, description , precip , uvi;
-//    private int image_icon;
+    private String image_icon;
     private String morn , day , eve, night;
 
-    public Weather(String day_date, String high_low, String description, String precip, String uvi, String morn, String day, String eve, String night) {
+    public Weather(String day_date, String high_low, String description, String precip, String uvi, String morn, String day, String eve, String night , String image_icon) {
         this.day_date = day_date;
         this.high_low = high_low;
         this.description = description;
         this.precip = precip;
         this.uvi = uvi;
-//        this.image_icon = image_icon;
+        this.image_icon = "_"+image_icon;
         this.morn = morn;
         this.day = day;
         this.eve = eve;
@@ -38,9 +38,11 @@ public class Weather {
         return uvi;
     }
 
-//    public int getImage_icon() {
-//        return image_icon;
-//    }
+    public String getImage_icon() {
+
+
+        return image_icon;
+    }
 
     public String getMorn() {
         return morn;
@@ -78,9 +80,9 @@ public class Weather {
         this.uvi = uvi;
     }
 
-//    public void setImage_icon(int image_icon) {
-//        this.image_icon = image_icon;
-//    }
+    public void setImage_icon(String image_icon) {
+        this.image_icon = image_icon;
+    }
 
     public void setMorn(String morn) {
         this.morn = morn;
