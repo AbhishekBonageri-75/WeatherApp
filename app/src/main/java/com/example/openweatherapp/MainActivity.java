@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private RequestQueue queue;
     private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
+//    public String
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
         CurCityTime.setText(convertTime(Long.parseLong(current_data.getString("dt")),1));
-        CurSunrise.setText(convertTime(Long.parseLong(current_data.getString("sunrise")),2));
+        CurSunrise.setText(convertTime(Long.parseLong(current_data.getString("sunrise")),3));
         CurSunset.setText(convertTime(Long.parseLong(current_data.getString("sunset")),3));
         CurHumidity.setText(current_data.getString("humidity")+"%");
         CurFeelsLike.setText(""+convertTemp(current_data.getString("feels_like")));
@@ -317,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             CurWind.setText(current_data.getString("wind_speed")+"/"+ current_data.getString("wind_deg")+"/"+ current_data.getString("wind_gust"));
         }catch(Exception e){
+            CurWind.setVisibility(View.INVISIBLE);
             Toast.makeText(this, "No Wind Gust_data "+e, Toast.LENGTH_SHORT).show();
         }
 
@@ -382,7 +384,9 @@ public class MainActivity extends AppCompatActivity {
             case 1: dtf = DateTimeFormatter.ofPattern("EEE MMM dd h:mm a, yyyy", Locale.getDefault());
                     formattedTimeString = ldt.format(dtf);
                     break;
-            case 2:
+            case 2: dtf = DateTimeFormatter.ofPattern("E,m/d", Locale.getDefault());
+                    formattedTimeString = ldt.format(dtf);
+                    break;
             case 3:
                 dtf = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault());
                 formattedTimeString = ldt.format(dtf);

@@ -7,12 +7,12 @@
 
     <TextView
         android:id="@+id/week_row_day_date"
-        android:layout_width="410dp"
+        android:layout_width="0dp"
         android:layout_height="34dp"
         android:background="#8770ED"
+        android:gravity="center"
         android:text="TextView"
         android:textColor="#FBFAFA"
-        android:gravity="center"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

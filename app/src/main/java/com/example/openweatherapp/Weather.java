@@ -1,11 +1,24 @@
 package com.example.openweatherapp;
 
-public class Weather {
+import android.widget.Toast;
+
+import org.json.JSONException;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public class Weather  {
     private String day_date , high_low, description , precip , uvi;
     private String image_icon;
     private String morn , day , eve, night;
 
+
     public Weather(String day_date, String high_low, String description, String precip, String uvi, String morn, String day, String eve, String night , String image_icon) {
+//        Toast.makeText(this, "day_date"+day_date, Toast.LENGTH_SHORT).show();
+//        day_date = convertTime(Long.parseLong(day_date),2) ;
+//        Toast.makeText(this, "day_date"+day_date, Toast.LENGTH_SHORT).show();
         this.day_date = day_date;
         this.high_low = high_low;
         this.description = description;
@@ -19,6 +32,7 @@ public class Weather {
     }
 
     public String getDay_date() {
+
         return day_date;
     }
 
@@ -39,8 +53,6 @@ public class Weather {
     }
 
     public String getImage_icon() {
-
-
         return image_icon;
     }
 
@@ -99,5 +111,6 @@ public class Weather {
     public void setNight(String night) {
         this.night = night;
     }
+
 }
 

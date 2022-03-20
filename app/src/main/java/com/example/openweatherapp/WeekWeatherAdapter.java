@@ -15,6 +15,7 @@ import java.util.List;
 public class WeekWeatherAdapter extends RecyclerView.Adapter<MyWeekViewHolder> {
 
     private static final String TAG = "WeekWeatherAdapter";
+//    MainActivity ma = new MainActivity();
     private final List<Weather> weatherList;
     private final WeekWeather weekAct;
 
@@ -40,8 +41,11 @@ public class WeekWeatherAdapter extends RecyclerView.Adapter<MyWeekViewHolder> {
     public void onBindViewHolder(@NonNull MyWeekViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: FILLING VIEW HOLDER Weather " + position);
 
-        Weather weather = weatherList.get(position);
 
+        Weather weather = weatherList.get(position);
+        //Convert day_date to Day,Month/date;
+//        String day = weather.getDay_date();
+//        day = ma.convertTime(Long.parseLong(day),2);
         holder.day_date.setText(weather.getDay_date());
         holder.high_low.setText(weather.getHigh_low());
         holder.description.setText(weather.getDescription());
