@@ -1,62 +1,101 @@
 package com.example.openweatherapp;
 
 public class Weather {
-    private String day;
-    private String time;
-//    private String icon;
-    private String temperature;
-    private String description;
+    private String day_date , high_low, description , precip , uvi;
+//    private int image_icon;
+    private String morn , day , eve, night;
 
-
-    public Weather() { }
-
-    public Weather(String day, String time,  String temperature, String description) {
-        this.day = day;
-        this.time = time;
-//        this.icon = icon;
-        this.temperature = temperature;
+    public Weather(String day_date, String high_low, String description, String precip, String uvi, String morn, String day, String eve, String night) {
+        this.day_date = day_date;
+        this.high_low = high_low;
         this.description = description;
-    }
-
-    public String getDay() {
-        return day;
-    }
-
-    public void setDay(String day) {
+        this.precip = precip;
+        this.uvi = uvi;
+//        this.image_icon = image_icon;
+        this.morn = morn;
         this.day = day;
+        this.eve = eve;
+        this.night = night;
     }
 
-    public String getTime() {
-        return time;
+    public String getDay_date() {
+        return day_date;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-//    public String getIcon() {
-//        return icon;
-//    }
-//
-//    public void setIcon(String icon) {
-//        this.icon = icon;
-//    }
-
-    public String getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(String temperature) {
-        this.temperature = temperature;
+    public String getHigh_low() {
+        return high_low;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public String getPrecip() {
+        return precip;
+    }
+
+    public String getUvi() {
+        return uvi;
+    }
+
+//    public int getImage_icon() {
+//        return image_icon;
+//    }
+
+    public String getMorn() {
+        return morn;
+    }
+
+    public String getDay() {
+        return day;
+    }
+
+    public String getEve() {
+        return eve;
+    }
+
+    public String getNight() {
+        return night;
+    }
+
+    public void setDay_date(String day_date) {
+        this.day_date = day_date;
+    }
+
+    public void setHigh_low(String high_low) {
+        this.high_low = high_low;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
-}
 
+    public void setPrecip(String precip) {
+        this.precip = precip;
+    }
+
+    public void setUvi(String uvi) {
+        this.uvi = uvi;
+    }
+
+//    public void setImage_icon(int image_icon) {
+//        this.image_icon = image_icon;
+//    }
+
+    public void setMorn(String morn) {
+        this.morn = morn;
+    }
+
+    public void setDay(String day) {
+        this.day = day;
+    }
+
+    public void setEve(String eve) {
+        this.eve = eve;
+    }
+
+    public void setNight(String night) {
+        this.night = night;
+    }
+}
 

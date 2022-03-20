@@ -43,14 +43,8 @@ public class Activity2 extends AppCompatActivity {
                 try {
                     JSONArray dailye = response.getJSONArray("daily");
                   lati.setText(response.getString("lat"));
-//                    lati.setText("hello");
-
                     dailyy.setText(dailye.toString());
-
                     JSONArray cur = response.getJSONArray("current");
-//                  JSONObject obj = cur.getJSONObject(0);
-//                  String cr = obj.getString("dt").toString();
-
                     tv.setText(dailye.toString());
                     current.setText(dailye.toString());
                 } catch (JSONException e) {

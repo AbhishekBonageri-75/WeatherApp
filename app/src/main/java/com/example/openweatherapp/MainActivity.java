@@ -3,6 +3,7 @@ package com.example.openweatherapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -13,11 +14,15 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,15 +55,9 @@ public class MainActivity extends AppCompatActivity {
     TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
     ImageView icon , icon1 ,icon2,icon3,icon4,icon5,icon6;
     JSONObject current_data,weatherObject,dailyTempObject,t_response;
-//    JSONObject weatherObject;
-//    JSONObject dailyTempObject;
-    RecyclerView recyclerView;
-//    SwipeRefreshLayout swipeRefreshLayout;
-
-//    int count = 0;
-    Adapter adapter;
-    List<Weather> list;
-//    public  JSONObject current_data = new JSONObject();
+    ConstraintLayout cl;
+//    RecyclerView recyclerView;
+    private static final String TAG = "MainActivity";
     private RequestQueue queue;
     private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
 
@@ -66,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        cl = findViewById(R.id.constraint_layout);
         CurCityState = findViewById(R.id.city_state);
         CurCityTime = findViewById(R.id.city_time);
-        recyclerView = findViewById(R.id.recyclerview);
+//        recyclerView = findViewById(R.id.recyclerview);
         CurSunrise = findViewById(R.id.cur_sunrise);
         CurSunset = findViewById(R.id.cur_sunset);
         CurHumidity = findViewById(R.id.cur_humidity);
@@ -90,22 +89,40 @@ public class MainActivity extends AppCompatActivity {
         icon5 = findViewById(R.id.temperature_icon_5);
         icon6 = findViewById(R.id.temperature_icon_6);
         icon1 = findViewById(R.id.temperature_icon_1);
-        list = new ArrayList<>();
+//        list = new ArrayList<>();
+        if(hasNetworkConnection() == false){
+            ConstraintLayout layout = null;
+            ViewGroup rootView=findViewById(R.id.constraint_layout);
+            for(int i=0;i<rootView.getChildCount();i++){
+
+                View view=rootView.getChildAt(i);
+
+                if(view.getId()==R.id.city_state){
+
+                    //Do something
+                    Toast.makeText(this, "No internet Connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "id:"+view.getId(), Toast.LENGTH_LONG).show();
+                    CurCityState.setText("No internet Connection");
+
+                }else{
+
+//                    Do something
+//                    LinearLayout layout = findViewById("root");
+//                    for(int e=0;e<layout.getChildCount();e++)
+//                    {
+//                        View v =  (View)layout.getChildAt(e);
+//                        // hide `v`
+//                        v.setVisibility(View.INVISIBLE);
+//                    }
+                }
+            }
+            return;
+        }
 
 
 
         //Changing the action bar colour
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.purple_500)));
-
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                count += 1;
-//                Toast.makeText(MainActivity.this, "Refresh"+count, Toast.LENGTH_SHORT).show();
-//                onCreate(new Bundle());
-//                swipeRefreshLayout.setRefreshing(false);
-//            }
-//        });
 
         //Loading json data using volley
         queue = Volley.newRequestQueue(this);
@@ -127,11 +144,6 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject dailyObject = dailyArray.getJSONObject(0);
                     dailyTempObject = dailyObject.getJSONObject("temp");
 
-
-//                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.toString(), Toast.LENGTH_SHORT).show();
-//                    Toast.makeText(MainActivity.this, "Daily.Array:"+dailyArray.getString(0).toString(), Toast.LENGTH_SHORT).show();
-//                    Toast.makeText(MainActivity.this, "Daily.temp:"+dailyTempObject.getString("morn"), Toast.LENGTH_LONG).show();
-//                    CurCityState.setText(response.getString("lat")+"--"+response.getString("lon"));
                     CurCityState.setText(GetCity());//GetCity();
                     setdata(current_data,weatherObject,dailyTempObject);
                 } catch (JSONException e) {
@@ -146,6 +158,13 @@ public class MainActivity extends AppCompatActivity {
         });
         queue.add(jsonObjectRequest);
     }
+
+    private boolean hasNetworkConnection() {
+        ConnectivityManager connectivityManager = getSystemService(ConnectivityManager.class);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnectedOrConnecting());
+    }
+
 
     public String GetCity(){
         StringBuilder sb = new StringBuilder();
@@ -173,8 +192,6 @@ public class MainActivity extends AppCompatActivity {
             break;
 //            sb.append("\n");
         }
-
-//        Toast.makeText(this, "citystate: "+sb.toString(), Toast.LENGTH_SHORT).show();
         citystate = sb.toString();
         return citystate;
     }
@@ -190,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item)  {
 
         if(item.getItemId() == R.id.opt_temp_format){
-            Toast.makeText(this, "Temp_selected", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Temp_selected", Toast.LENGTH_SHORT).show();
 //            int[] images = {R.drawable.units_c,R.drawable.units_f};
             if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_c).getConstantState())){
                 item.setIcon(R.drawable.units_f);
@@ -220,6 +237,9 @@ public class MainActivity extends AppCompatActivity {
 
 //            Intent intent = new Intent(MainActivity.this,Activity2.class);
             Intent intent = new Intent(MainActivity.this,WeekWeather.class);
+            intent.putExtra("title",GetCity());
+            intent.putExtra("api",t_response.toString());
+//            intent.putExtra()
             startActivity(intent);
         }
         else if(item.getItemId() == R.id.opt_location){
@@ -261,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 
-                Toast.makeText(MainActivity.this, "Location_selected", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Location_selected", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -290,10 +310,18 @@ public class MainActivity extends AppCompatActivity {
         CurTemp.setText(""+convertTemp(current_data.getString("temp")));
 //        CurTemp.setText(current_data.getString("temp"));
         CurUvi.setText(current_data.getString("uvi"));
-        CurVisibility.setText(current_data.getString("visibility"));
+        CurVisibility.setText(""+Integer.parseInt(current_data.getString("visibility"))/1609+"_Mi");
         CurWeatherDescription.setText(weatherObject.getString("description"));
-        CurWind.setText(current_data.getString("wind_speed")+"/"+ current_data.getString("wind_deg")+"/"+ current_data.getString("wind_gust"));
-        Toast.makeText(MainActivity.this, "Weather.Icon:"+weatherObject.getString("icon"), Toast.LENGTH_LONG).show();
+
+        //Wind gust data might not be there in the API response some times .
+        try {
+            CurWind.setText(current_data.getString("wind_speed")+"/"+ current_data.getString("wind_deg")+"/"+ current_data.getString("wind_gust"));
+        }catch(Exception e){
+            Toast.makeText(this, "No Wind Gust_data "+e, Toast.LENGTH_SHORT).show();
+        }
+
+
+//        Toast.makeText(MainActivity.this, "Weather.Icon:"+weatherObject.getString("icon"), Toast.LENGTH_LONG).show();
 
         w_icon = "_"+weatherObject.getString("icon");
         id = fetchIconId(w_icon);
@@ -306,6 +334,8 @@ public class MainActivity extends AppCompatActivity {
         DailyNight.setText(""+convertTemp(dailyTempObject.getString("night")));
 
     }
+
+
     @SuppressLint("SetTextI18n")
     private void setCelData(JSONObject current_data, JSONObject weatherObject, JSONObject dailyTempObject) throws JSONException {
         CurTemp.setText(""+convertToC(current_data.getString("temp")));
@@ -315,14 +345,15 @@ public class MainActivity extends AppCompatActivity {
         DailyDay.setText(""+convertToC(dailyTempObject.getString("day")));
         DailyEve.setText(""+convertToC(dailyTempObject.getString("eve")));
         DailyNight.setText(""+convertToC(dailyTempObject.getString("night")));
+        CurVisibility.setText(""+Integer.parseInt(current_data.getString("visibility"))/1000+"_KM");
     }
 
     private int fetchIconId(String w_icon) {
 
-        Toast.makeText(MainActivity.this, "Weather.Icon:"+w_icon, Toast.LENGTH_LONG).show();
+//        Toast.makeText(MainActivity.this, "Weather.Icon:"+w_icon, Toast.LENGTH_LONG).show();
         Context context = icon.getContext();
         int id = context.getResources().getIdentifier(w_icon , "drawable" , context.getOpPackageName());
-        Toast.makeText(MainActivity.this, "ID:"+id, Toast.LENGTH_LONG).show();
+//        Toast.makeText(MainActivity.this, "ID:"+id, Toast.LENGTH_LONG).show();
         return id;
     }
 
@@ -330,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         float kelvin=0;
         MenuItem i=null;
 //        i.getItemId();
-        Toast.makeText(this, "Type= "+Skelvin.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Type= "+Skelvin.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
         kelvin = Float.parseFloat(Skelvin);
         int f=0;
         f= (int) ((((kelvin-273.15)*9)/5)+32);
@@ -338,9 +369,6 @@ public class MainActivity extends AppCompatActivity {
     }
     private int convertToC(String Skelvin){
         float kelvin=0;
-        MenuItem i=null;
-//        i.getItemId();
-        Toast.makeText(this, "Type= "+Skelvin.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
         kelvin = Float.parseFloat(Skelvin);
         int f=0;
         f = (int) (kelvin-273.15);
