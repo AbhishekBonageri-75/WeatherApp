@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,9 +19,11 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.CalendarContract;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.Menu;
@@ -45,7 +48,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     //---------------------
     private SharedPreferences mypref ;
     private Menu menu;
-    String da , te , im , des , unitIdentifier="f";
+    String da , te , im , des ,ima, unitIdentifier="f";
     TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
     TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
@@ -145,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         if(hasNetworkConnection() == false){
             ConstraintLayout layout = null;
             ViewGroup rootView=findViewById(R.id.constraint_layout);
+            rootView.setVisibility(View.INVISIBLE);
             for(int i=0;i<rootView.getChildCount();i++){
                 View view=rootView.getChildAt(i);
                 if(view.getId()==R.id.city_state){
@@ -196,9 +202,29 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                             da = hourlyDataObj.getString("dt");
                             im = hourlyDataObj.getString("dt");
                             te = hourlyDataObj.getString("temp");
-//                            im =hrWeatherobj.getString("icon");
+                            ima =hrWeatherobj.getString("icon");
                             des =hrWeatherobj.getString("description");
-                            digits.add(new hourlyModel(da , im, te , des));
+                            if(unitIdentifier=="f") {
+                                Toast.makeText(MainActivity.this, "F1", Toast.LENGTH_SHORT).show();
+                                da = convertHRtime(da,1);
+                                im = convertHRtime(im,2);
+                                te = convertHRtemp(te,3);
+                                digits.add(new hourlyModel(da, im, te, des, ima));
+                            }
+                            else if(unitIdentifier=="c"){
+                                Toast.makeText(MainActivity.this, "C", Toast.LENGTH_SHORT).show();
+                                da = convertHRtime(da,1);
+                                im = convertHRtime(im,2);
+                                te = convertHRtemp(te,4);
+                                digits.add(new hourlyModel(da, im, te, des, ima));
+                            }
+                            else{
+                                Toast.makeText(MainActivity.this, "F2", Toast.LENGTH_SHORT).show();
+                                da = convertHRtime(da,1);
+                                im = convertHRtime(im,2);
+                                te = convertHRtemp(te,3);
+                                digits.add(new hourlyModel(da, im, te+ " \u2109", des, ima));
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -254,6 +280,83 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 //
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this,
 //                LinearLayoutManager.HORIZONTAL, false));
+    }
+
+    public String convertHRtime(String time , int i)
+    {
+
+
+        LocalDateTime ldt = LocalDateTime.ofEpochSecond(Long.parseLong(time) + timezone_offset(), 0, ZoneOffset.UTC);
+        String formattedTimeString="";
+        DateTimeFormatter dtf;
+
+        //_______
+//        LocalDateTime ldt = LocalDateTime.ofEpochSecond(dt + timezone_offset(), 0, ZoneOffset.UTC);
+//        String formattedTimeString="";
+//        DateTimeFormatter dtf;
+//        switch (i){
+//            case 1: dtf = DateTimeFormatter.ofPattern("EEE MMM dd h:mm a, yyyy", Locale.getDefault());
+//                formattedTimeString = ldt.format(dtf);
+//                break;
+//            case 2: dtf = DateTimeFormatter.ofPattern("E,m/d", Locale.getDefault());
+//                formattedTimeString = ldt.format(dtf);
+//                break;
+//            case 3:
+//                dtf = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault());
+//                formattedTimeString = ldt.format(dtf);
+//                break;
+//            default:
+//                Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
+//        }
+//        return formattedTimeString;
+        //_______
+
+
+
+
+
+        String s = time;
+        switch(i){
+            case 1:
+                //convert time to day
+                dtf = DateTimeFormatter.ofPattern("EEEE ", Locale.getDefault());
+                formattedTimeString = ldt.format(dtf);
+                break;
+            case 2:
+                //conver time to 11;00 AM
+                dtf = DateTimeFormatter.ofPattern("h:mm a ", Locale.getDefault());
+                formattedTimeString = ldt.format(dtf);
+                break;
+            default:
+                //...
+        }
+
+
+        return formattedTimeString;
+    }
+    public String convertHRtemp(String s , int i)
+    {
+        int f=0;
+        switch(i){
+            case 3:
+                //convert temp to f
+                float kelvin=0;
+                kelvin = Float.parseFloat(s);
+                f=0;
+                f= (int) ((((kelvin-273.15)*9)/5)+32);
+
+                break;
+            case 4:
+                //conver temp to C
+                kelvin=0;
+                kelvin = Float.parseFloat(s);
+                f=0;
+                f = (int) (kelvin-273.15);
+                break;
+            default:
+                //...
+        }
+        return String.valueOf(f);
     }
 
     @Override
@@ -581,5 +684,30 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     @Override
     public void onClick(View view) {
         Toast.makeText(view.getContext(),"You Clicked me", Toast.LENGTH_SHORT).show();
+        String s=null;
+        int pos = recyclerView.getChildLayoutPosition(view);
+        hourlyModel w = null;
+        w = digits.get(pos);
+        try {
+            hourlyDataObj = hourlyData.getJSONObject(pos);
+            s=hourlyDataObj.getString("dt");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Long dt ;
+        dt = Long.parseLong(s);
+        LocalDateTime ldt = LocalDateTime.ofEpochSecond(dt + timezone_offset(), 0, ZoneOffset.UTC);
+        ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
+        long date = zdt.toInstant().toEpochMilli();
+
+        Toast.makeText(this, "Opening calendar to _ "+w.getDay(), Toast.LENGTH_LONG).show();
+        Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
+        builder.appendPath("time");
+        ContentUris.appendId(builder, date);
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setData(builder.build());
+        startActivity(intent);
+
     }
 }

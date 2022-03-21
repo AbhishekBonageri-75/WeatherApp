@@ -1,6 +1,7 @@
 package com.example.openweatherapp;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MyViewHolder extends RecyclerView.ViewHolder {
 
     TextView value,value2,value3,value4;
+    ImageView value55;
 
     MyViewHolder(View view) {
         super(view);
@@ -16,5 +18,6 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
         value2 = view.findViewById(R.id.value2);
         value3 = view.findViewById(R.id.value3);
         value4 = view.findViewById(R.id.value4);
+        value55 = view.findViewById(R.id.value55);
     }
 }

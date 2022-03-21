@@ -2,23 +2,23 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_width="100dp"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/value"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:background="@color/cardview_light_background"
         android:fontFamily="monospace"
         android:gravity="center"
         android:paddingStart="2dp"
 
         android:paddingEnd="2dp"
-        android:textSize="25sp"
+        android:textColor="#F4F0F0"
+        android:textSize="15sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintLeft_creator="1"
@@ -28,16 +28,19 @@
 
     <TextView
         android:id="@+id/value2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_light_background"
-        android:fontFamily="monospace"
-        android:gravity="center"
 
+        android:layout_marginTop="8dp"
+        android:fontFamily="monospace"
+
+        android:gravity="center"
         android:paddingStart="2dp"
         android:paddingEnd="2dp"
-        android:textSize="25sp"
+        android:textColor="#F4F0F0"
+        android:textSize="15sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/value"
         app:layout_constraintStart_toStartOf="@+id/value"
         app:layout_constraintTop_toBottomOf="@+id/value"
         tools:layout_constraintLeft_creator="1"
@@ -47,19 +50,20 @@
 
     <TextView
         android:id="@+id/value3"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:background="@color/cardview_light_background"
-        android:fontFamily="monospace"
-        android:gravity="center"
 
+        android:fontFamily="monospace"
+
+        android:gravity="center"
         android:paddingStart="2dp"
         android:paddingEnd="2dp"
-        android:textSize="25sp"
+        android:textColor="#F4F0F0"
+        android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/value2"
-        app:layout_constraintTop_toBottomOf="@+id/value2"
+        app:layout_constraintTop_toBottomOf="@+id/value55"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1"
@@ -67,22 +71,35 @@
 
     <TextView
         android:id="@+id/value4"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_light_background"
+
+        android:layout_marginTop="8dp"
         android:fontFamily="monospace"
+
         android:gravity="center"
         android:paddingStart="2dp"
-
         android:paddingEnd="2dp"
-        android:textSize="25sp"
+        android:textColor="#F4F0F0"
+        android:textSize="15sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/value3"
         app:layout_constraintTop_toBottomOf="@+id/value3"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1"
         tools:text="9" />
+
+    <ImageView
+        android:id="@+id/value55"
+        android:layout_width="47dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/value2"
+        app:srcCompat="@drawable/_01n" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

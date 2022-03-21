@@ -31,7 +31,7 @@ public class WeekWeatherAdapter extends RecyclerView.Adapter<MyWeekViewHolder> {
         Log.d(TAG, "onCreateViewHolder: MAKING NEW MyViewHolder");
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.week_row2, parent, false);
-        Toast.makeText(weekAct, "Inside Adapter(onCreateViewHolder)", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(weekAct, "Inside Adapter(onCreateViewHolder)", Toast.LENGTH_SHORT).show();
         itemView.setOnClickListener( weekAct);
 //        itemView.setOnLongClickListener((View.OnLongClickListener) weekAct);
 
@@ -62,13 +62,13 @@ public class WeekWeatherAdapter extends RecyclerView.Adapter<MyWeekViewHolder> {
         int id = context.getResources().getIdentifier(img , "drawable" , context.getOpPackageName());
         holder.image_icon.setImageResource(id);
 //        Toast.makeText(this, "Inside Adapter(onBindViewHolder)", Toast.LENGTH_SHORT).show();
-        Toast.makeText(context, "Inside Adapter(onBindViewHolder)", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, "Inside Adapter(onBindViewHolder)", Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public int getItemCount() {
-        Toast.makeText(weekAct, "digits: size"+weatherList.size(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(weekAct, "digits: size"+weatherList.size(), Toast.LENGTH_SHORT).show();
         return weatherList.size();
     }
 }

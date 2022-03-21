@@ -1,5 +1,6 @@
 package com.example.openweatherapp;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +52,11 @@ public class DigitAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.value2.setText(model.getTime());
         holder.value3.setText(model.getTemp());
         holder.value4.setText(model.getDesc());
-        Toast.makeText(mainAct, "Inside Adapter(onBindViewHolder)", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mainAct, "Inside Adapter(onBindViewHolder)", Toast.LENGTH_SHORT).show();
+        String img = model.getImg();
+        Context context = holder.value55.getContext();
+        int id = context.getResources().getIdentifier(img , "drawable" , context.getOpPackageName());
+        holder.value55.setImageResource(id);
     }
 
     @Override
