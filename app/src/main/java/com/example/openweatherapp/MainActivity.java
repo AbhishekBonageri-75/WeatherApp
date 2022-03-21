@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
 //    private List<Weather1> weatherList = new ArrayList<>();
     private SharedPreferences mypref ;
-    String da , te , im , des;
+    private Menu menu;
+    String da , te , im , des , unitIdentifier="f";
     TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
     TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
@@ -189,7 +190,34 @@ public class MainActivity extends AppCompatActivity {
                     dailyTempObject = dailyObject.getJSONObject("temp");
 
                     CurCityState.setText(GetCity());//GetCity();
-                    setdata(current_data,weatherObject,dailyTempObject);
+
+                    mypref = getSharedPreferences("MY_PREF" , Context.MODE_PRIVATE);
+                    String un = mypref.getString("unit" , "NoData");
+
+                    if(unitIdentifier.equals("f")){
+
+                        setdata(current_data,weatherObject,dailyTempObject);
+                    }else if(unitIdentifier.equals("c")){
+                        setdata(current_data,weatherObject,dailyTempObject);
+                        //toggle  setCelData by toggling
+                        MenuItem item = menu.findItem(R.id.opt_temp_format);
+//                        item.setIcon(R.drawable.units_c);
+//                        setTempIconsC();
+//                        try {
+//                            setCelData(current_data,weatherObject,dailyTempObject);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+                        item.setIcon(R.drawable.units_f);
+                        onOptionsItemSelected(item);
+
+                    }
+                    else{
+                        Toast.makeText(MainActivity.this, "Loading Default", Toast.LENGTH_SHORT).show();
+                        setdata(current_data,weatherObject,dailyTempObject);
+                    }
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -208,17 +236,35 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+        Toast.makeText(getApplicationContext(), "onPause called", Toast.LENGTH_LONG).show();
+//        mypref = getSharedPreferences("UNIT_PREF" , Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor seditor = mypref.edit();
+        seditor.putString("unit",unitIdentifier);
+//        seditor.putString("lon",String.valueOf(lon));
+//                    seditor.putString("unit",uni);
+        seditor.apply();
+        Toast.makeText(this, "OnPause_"+ unitIdentifier, Toast.LENGTH_SHORT).show();
+
+    }
+
     public void setApiString(){
-        String url = "";
         mypref = getSharedPreferences("MY_PREF" , Context.MODE_PRIVATE);
         String la = mypref.getString("lat" , "NoData");
         String lo = mypref.getString("lon" , "NoData");
+        unitIdentifier = mypref.getString("unit" , "f");
         if(la != "NoData" || lo != "NoData"){
             weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" +la+ "&" +"lon=" +lo+ "&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
         }
         else{
             weatherUrl ="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
         }
+        Toast.makeText(this, "Set API__"+ unitIdentifier, Toast.LENGTH_SHORT).show();
 
 //        return url;
     }
@@ -246,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
         for (Address ad : addresses) {
 
             String a = String.format("%s %s ",
-
                     (ad.getLocality() == null ? "" : ad.getLocality()),
                     (ad.getCountryName() == null ? "" : ad.getAdminArea()));
 
@@ -263,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.opt_menu, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -275,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
 //            int[] images = {R.drawable.units_c,R.drawable.units_f};
             if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_c).getConstantState())){
                 item.setIcon(R.drawable.units_f);
+                unitIdentifier = "f";
                 setTempIcons();
 
                 try {
@@ -285,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_f).getConstantState())){
                 item.setIcon(R.drawable.units_c);
+                unitIdentifier="c";
                 setTempIconsC();
                 try {
                     setCelData(current_data,weatherObject,dailyTempObject);
@@ -298,15 +346,15 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else if(item.getItemId() == R.id.opt_calendar){
-
-
             Intent intent = new Intent(MainActivity.this,WeekWeather.class);
             intent.putExtra("title",GetCity());
             intent.putExtra("api",t_response.toString());
-//            intent.putExtra()
             startActivity(intent);
         }
         else if(item.getItemId() == R.id.opt_location){
+            String x="c";
+            if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.units_c).getConstantState()))
+                x="f";
             generate_dialogue();
         }
         else{
@@ -359,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor seditor = mypref.edit();
                     seditor.putString("lat",String.valueOf(lat));
                     seditor.putString("lon",String.valueOf(lon));
+//                    seditor.putString("unit",uni);
                     seditor.apply();
                     restartActivity();
 
@@ -402,14 +451,7 @@ public class MainActivity extends AppCompatActivity {
         CurUvi.setText(current_data.getString("uvi"));
         CurVisibility.setText(""+Integer.parseInt(current_data.getString("visibility"))/1609+"_Mi");
         CurWeatherDescription.setText(weatherObject.getString("description"));
-
-        //Wind gust data might not be there in the API response some times .
-        try {
-            CurWind.setText(getDirection(Double.parseDouble(current_data.getString("wind_deg")))+" at "+ current_data.getString("wind_speed")+" MiPh");
-        }catch(Exception e){
-            CurWind.setVisibility(View.INVISIBLE);
-            Toast.makeText(this, "No Wind Gust_data "+e, Toast.LENGTH_SHORT).show();
-        }
+        CurWind.setText(getDirection(Double.parseDouble(current_data.getString("wind_deg")))+" at "+Double.parseDouble(current_data.getString("wind_speed"))+" MiPh");
 
 
 //        Toast.makeText(MainActivity.this, "Weather.Icon:"+weatherObject.getString("icon"), Toast.LENGTH_LONG).show();
@@ -457,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
         DailyEve.setText(""+convertToC(dailyTempObject.getString("eve")));
         DailyNight.setText(""+convertToC(dailyTempObject.getString("night")));
         CurVisibility.setText(""+Integer.parseInt(current_data.getString("visibility"))/1000+"_KM");
-        CurWind.setText(getDirection(Double.parseDouble(current_data.getString("wind_deg")))+" at "+ Double.parseDouble(current_data.getString("wind_speed"))*1.701+" KmPh");
+        CurWind.setText(getDirection(Double.parseDouble(current_data.getString("wind_deg")))+" at "+ (int) (Double.parseDouble(current_data.getString("wind_speed"))*1.701)+" KmPh");
     }
 
     private int fetchIconId(String w_icon) {
