@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -54,6 +55,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
 //    private List<Weather1> weatherList = new ArrayList<>();
+    private SharedPreferences mypref ;
     String da , te , im , des;
     TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private RequestQueue queue;
-    private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
+    private static String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         icon1 = findViewById(R.id.temperature_icon_1);
 //        list = new ArrayList<>();
 
-//        weatherUrl =  setApiString();
+        setApiString();
 
         if(hasNetworkConnection() == false){
             ConstraintLayout layout = null;
@@ -206,10 +208,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-//    public String setApiString(){
-//        String url = "";
+    public void setApiString(){
+        String url = "";
+        mypref = getSharedPreferences("MY_PREF" , Context.MODE_PRIVATE);
+        String la = mypref.getString("lat" , "NoData");
+        String lo = mypref.getString("lon" , "NoData");
+        if(la != "NoData" || lo != "NoData"){
+            weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" +la+ "&" +"lon=" +lo+ "&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
+        }
+        else{
+            weatherUrl ="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
+        }
+
 //        return url;
-//    }
+    }
 
     private boolean hasNetworkConnection() {
         ConnectivityManager connectivityManager = getSystemService(ConnectivityManager.class);
@@ -344,6 +356,10 @@ public class MainActivity extends AppCompatActivity {
                     lon = address.get(0).getLongitude();
                     Toast.makeText(MainActivity.this, "lat"+lat, Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this, "Lon"+lon, Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor seditor = mypref.edit();
+                    seditor.putString("lat",String.valueOf(lat));
+                    seditor.putString("lon",String.valueOf(lon));
+                    seditor.apply();
                     restartActivity();
 
                 } catch (IOException e) {
@@ -389,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Wind gust data might not be there in the API response some times .
         try {
-            CurWind.setText(current_data.getString("wind_speed")+"/"+ current_data.getString("wind_deg")+"/"+ current_data.getString("wind_gust"));
+            CurWind.setText(getDirection(Double.parseDouble(current_data.getString("wind_deg")))+" at "+ current_data.getString("wind_speed")+" MiPh");
         }catch(Exception e){
             CurWind.setVisibility(View.INVISIBLE);
             Toast.makeText(this, "No Wind Gust_data "+e, Toast.LENGTH_SHORT).show();
@@ -410,6 +426,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private String getDirection(double degrees) {
+        if (degrees >= 337.5 || degrees < 22.5)
+            return "N";
+        if (degrees >= 22.5 && degrees < 67.5)
+            return "NE";
+        if (degrees >= 67.5 && degrees < 112.5)
+            return "E";
+        if (degrees >= 112.5 && degrees < 157.5)
+            return "SE";
+        if (degrees >= 157.5 && degrees < 202.5)
+            return "S";
+        if (degrees >= 202.5 && degrees < 247.5)
+            return "SW";
+        if (degrees >= 247.5 && degrees < 292.5)
+            return "W";
+        if (degrees >= 292.5 && degrees < 337.5)
+            return "NW";
+        return "X"; // We'll use 'X' as the default if we get a bad value
+    }
+
 
     @SuppressLint("SetTextI18n")
     private void setCelData(JSONObject current_data, JSONObject weatherObject, JSONObject dailyTempObject) throws JSONException {
@@ -421,6 +457,7 @@ public class MainActivity extends AppCompatActivity {
         DailyEve.setText(""+convertToC(dailyTempObject.getString("eve")));
         DailyNight.setText(""+convertToC(dailyTempObject.getString("night")));
         CurVisibility.setText(""+Integer.parseInt(current_data.getString("visibility"))/1000+"_KM");
+        CurWind.setText(getDirection(Double.parseDouble(current_data.getString("wind_deg")))+" at "+ Double.parseDouble(current_data.getString("wind_speed"))*1.701+" KmPh");
     }
 
     private int fetchIconId(String w_icon) {
