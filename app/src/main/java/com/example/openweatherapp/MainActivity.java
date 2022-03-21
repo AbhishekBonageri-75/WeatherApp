@@ -52,9 +52,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements  View.OnClickListener{
 
 //    private List<Weather1> weatherList = new ArrayList<>();
+    //---------------------
+    private final List<String> digits = new ArrayList<>();
+    private RecyclerView recyclerView; // Layout's recyclerview
+    private static final String piStr =
+            "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
+    //---------------------
     private SharedPreferences mypref ;
     private Menu menu;
     String da , te , im , des , unitIdentifier="f";
@@ -65,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
     JSONObject current_data,weatherObject,dailyTempObject,t_response , hourlyDataObj,hrWeatherobj;
     JSONArray hourlyData,hrWeatherArray;
     ConstraintLayout cl;
-    RecyclerView recyclerView;
 
     private static final String TAG = "MainActivity";
     private RequestQueue queue;
@@ -81,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
         CurCityState = findViewById(R.id.city_state);
         CurCityTime = findViewById(R.id.city_time);
 
+        //---------------------
+        recyclerView = findViewById(R.id.hourlyRecycler);
+        // Data to recyclerview adapter
+        DigitAdapter mAdapter = new DigitAdapter(digits, this);
+        recyclerView.setAdapter(mAdapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL, false));
+
+        //Make some data - not always needed - just used to fill list
+        for (int i = 0; i < piStr.length(); i++) {
+            digits.add("" + piStr.charAt(i));
+        }
+        //---------------------
 
 
         CurSunrise = findViewById(R.id.cur_sunrise);
@@ -201,13 +220,6 @@ public class MainActivity extends AppCompatActivity {
                         setdata(current_data,weatherObject,dailyTempObject);
                         //toggle  setCelData by toggling
                         MenuItem item = menu.findItem(R.id.opt_temp_format);
-//                        item.setIcon(R.drawable.units_c);
-//                        setTempIconsC();
-//                        try {
-//                            setCelData(current_data,weatherObject,dailyTempObject);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
                         item.setIcon(R.drawable.units_f);
                         onOptionsItemSelected(item);
 
@@ -229,12 +241,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         queue.add(jsonObjectRequest);
-//        recyclerView = findViewById(R.id.recyclerview);
-//        WeatherAdapter mAdapter = new WeatherAdapter(weatherList, this);
-//        recyclerView.setAdapter(mAdapter);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
     }
 
     @Override
@@ -242,12 +248,10 @@ public class MainActivity extends AppCompatActivity {
 
         super.onPause();
         Toast.makeText(getApplicationContext(), "onPause called", Toast.LENGTH_LONG).show();
-//        mypref = getSharedPreferences("UNIT_PREF" , Context.MODE_PRIVATE);
+
 
         SharedPreferences.Editor seditor = mypref.edit();
         seditor.putString("unit",unitIdentifier);
-//        seditor.putString("lon",String.valueOf(lon));
-//                    seditor.putString("unit",uni);
         seditor.apply();
         Toast.makeText(this, "OnPause_"+ unitIdentifier, Toast.LENGTH_SHORT).show();
 
@@ -557,5 +561,10 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return l;
+    }
+
+    @Override
+    public void onClick(View view) {
+        Toast.makeText(view.getContext(),"You Clicked me", Toast.LENGTH_SHORT).show();
     }
 }

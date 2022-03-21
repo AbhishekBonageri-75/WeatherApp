@@ -5,9 +5,12 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.28938906752411575" />
         <entry key="app/src/main/res/layout-land/activity_main.xml" value="0.375" />
+        <entry key="app/src/main/res/layout-land/digit_entry.xml" value="0.3375" />
+        <entry key="app/src/main/res/layout-port/digit_entry.xml" value="0.3734375" />
         <entry key="app/src/main/res/layout/activity_2.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_week_weather.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/digit_entry.xml" value="0.28177083333333336" />
         <entry key="app/src/main/res/layout/horizontal_recycler.xml" value="0.33" />
         <entry key="app/src/main/res/layout/weather_recycller_1.xml" value="0.2953125" />
         <entry key="app/src/main/res/layout/week_row.xml" value="0.33" />
