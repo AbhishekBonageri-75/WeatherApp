@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +16,6 @@
         android:theme="@style/Theme.OpenWeatherApp">
         <activity
             android:name=".WeekWeather"
-            android:exported="false" />
-        <activity
-            android:name=".Activity2"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

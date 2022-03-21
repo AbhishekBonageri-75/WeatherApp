@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -17,6 +18,8 @@ import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.Menu;
@@ -50,26 +53,33 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+//    private List<Weather1> weatherList = new ArrayList<>();
+    String da , te , im , des;
     TextView CurCityState , CurCityTime , CurSunrise , CurSunset;
     TextView CurHumidity , CurTemp , CurFeelsLike , CurWind , CurUvi , CurVisibility;
     TextView CurWeatherDescription , DailyMorn , DailyDay , DailyEve , DailyNight;
     ImageView icon , icon1 ,icon2,icon3,icon4,icon5,icon6;
-    JSONObject current_data,weatherObject,dailyTempObject,t_response;
+    JSONObject current_data,weatherObject,dailyTempObject,t_response , hourlyDataObj,hrWeatherobj;
+    JSONArray hourlyData,hrWeatherArray;
     ConstraintLayout cl;
-//    RecyclerView recyclerView;
+    RecyclerView recyclerView;
+
     private static final String TAG = "MainActivity";
     private RequestQueue queue;
     private static final String weatherUrl="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
-//    public String
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toast.makeText(this, "Beggining of oncreate", Toast.LENGTH_SHORT).show();
         cl = findViewById(R.id.constraint_layout);
         CurCityState = findViewById(R.id.city_state);
         CurCityTime = findViewById(R.id.city_time);
-//        recyclerView = findViewById(R.id.recyclerview);
+
+
+
         CurSunrise = findViewById(R.id.cur_sunrise);
         CurSunset = findViewById(R.id.cur_sunset);
         CurHumidity = findViewById(R.id.cur_humidity);
@@ -91,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
         icon6 = findViewById(R.id.temperature_icon_6);
         icon1 = findViewById(R.id.temperature_icon_1);
 //        list = new ArrayList<>();
+
+//        weatherUrl =  setApiString();
+
         if(hasNetworkConnection() == false){
             ConstraintLayout layout = null;
             ViewGroup rootView=findViewById(R.id.constraint_layout);
@@ -136,6 +149,34 @@ public class MainActivity extends AppCompatActivity {
                     //Current data
                     current_data = response.getJSONObject("current");
 
+
+                    //hourly data
+
+//                    hourlyData = response.getJSONArray("hourly");
+
+
+                    try {
+                        hourlyData =t_response.getJSONArray("hourly");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        for (int i = 0 ; i< hourlyData.length();i++){
+                            hourlyDataObj = hourlyData.getJSONObject(i);
+                            hrWeatherArray = hourlyDataObj.getJSONArray("weather");
+                            hrWeatherobj = hrWeatherArray.getJSONObject(0);
+                            da = hourlyDataObj.getString("dt");
+                            te = hourlyDataObj.getString("temp");
+                            im =hrWeatherobj.getString("icon");
+                            des =hrWeatherobj.getString("description");
+//                            weatherList.add(new Weather1(da , te, des , im));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+
                     //Current.Weather data
                     JSONArray weatherArray = current_data.getJSONArray("weather");
                     weatherObject = weatherArray.getJSONObject(0);
@@ -158,7 +199,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         queue.add(jsonObjectRequest);
+//        recyclerView = findViewById(R.id.recyclerview);
+//        WeatherAdapter mAdapter = new WeatherAdapter(weatherList, this);
+//        recyclerView.setAdapter(mAdapter);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
     }
+//    public String setApiString(){
+//        String url = "";
+//        return url;
+//    }
 
     private boolean hasNetworkConnection() {
         ConnectivityManager connectivityManager = getSystemService(ConnectivityManager.class);
@@ -236,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.opt_calendar){
 
-//            Intent intent = new Intent(MainActivity.this,Activity2.class);
+
             Intent intent = new Intent(MainActivity.this,WeekWeather.class);
             intent.putExtra("title",GetCity());
             intent.putExtra("api",t_response.toString());
@@ -245,7 +296,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.opt_location){
             generate_dialogue();
-
         }
         else{
             Toast.makeText(this, "No such selection", Toast.LENGTH_SHORT).show();
@@ -281,8 +331,23 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                    String add = et.getText().toString();
 
-//                Toast.makeText(MainActivity.this, "Location_selected", Toast.LENGTH_SHORT).show();
+                double lat , lon;
+                Geocoder geocoder = new Geocoder(MainActivity.this); // Here, “this” is an Activity try
+                try{
+                    List<Address> address = geocoder.getFromLocationName(add, 1);
+                    if (address == null || address.isEmpty()) { // Nothing returned!
+                        return ;
+                    }
+                    lat = address.get(0).getLatitude();
+                    lon = address.get(0).getLongitude();
+                    Toast.makeText(MainActivity.this, "lat"+lat, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Lon"+lon, Toast.LENGTH_SHORT).show();
+                    restartActivity();
+
+                } catch (IOException e) {
+                }
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -297,6 +362,14 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    public void restartActivity(){
+        Intent mIntent = getIntent();
+        finish();
+        startActivity(mIntent);
+    }
+
+
     @SuppressLint("SetTextI18n")
     public void setdata(JSONObject current_data,JSONObject weatherObject,JSONObject dailyTempObject ) throws JSONException {
         int id ;

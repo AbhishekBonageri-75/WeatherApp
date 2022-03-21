@@ -4,8 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +20,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class WeekWeather extends AppCompatActivity  implements View.OnClickListener{
@@ -44,6 +54,7 @@ public class WeekWeather extends AppCompatActivity  implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_week_weather);
 
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.purple_500)));
         recyclerView = findViewById(R.id.week_recycler);
         recyclerView.setAdapter(wAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -119,11 +130,41 @@ public class WeekWeather extends AppCompatActivity  implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        String s=null;
         int pos = recyclerView.getChildLayoutPosition(view);
         Weather w = weatherList.get(pos);
-        Toast.makeText(this, "You clicked:- "+w.toString(), Toast.LENGTH_SHORT).show();
+        try {
+            dailyObject = dailyArray.getJSONObject(pos);
+            s=dailyObject.getString("dt");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Long dt ;
+        dt = Long.parseLong(s);
+        LocalDateTime ldt = LocalDateTime.ofEpochSecond(dt + timezone_offse(), 0, ZoneOffset.UTC);
+        ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
+        long date = zdt.toInstant().toEpochMilli();
+
+        Toast.makeText(this, "Opening calendar to _ "+w.getDay_date(), Toast.LENGTH_LONG).show();
+        Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
+        builder.appendPath("time");
+        ContentUris.appendId(builder, date);
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setData(builder.build());
+        startActivity(intent);
 
     }
+    private long timezone_offse() {
+        int l = 0;
+        try {
+            l = Integer.parseInt(response.getString("timezone_offset"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return l;
+    }
+
     public String convertTim(long dt){
         LocalDateTime ldt = LocalDateTime.ofEpochSecond(dt + timezone_offset(), 0, ZoneOffset.UTC);
         String formattedTimeString="";
