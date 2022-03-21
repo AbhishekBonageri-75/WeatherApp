@@ -30,7 +30,6 @@ public class Weather  {
     }
 
     public String getDay_date() {
-
         return day_date;
     }
 

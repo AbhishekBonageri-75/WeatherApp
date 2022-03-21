@@ -56,10 +56,11 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
 //    private List<Weather1> weatherList = new ArrayList<>();
     //---------------------
-    private final List<String> digits = new ArrayList<>();
+//    private final List<String> digits = new ArrayList<>();
+    private final List<hourlyModel> digits = new ArrayList<>();
     private RecyclerView recyclerView; // Layout's recyclerview
-    private static final String piStr =
-            "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
+//    private static final String piStr =
+//            "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     //---------------------
     private SharedPreferences mypref ;
     private Menu menu;
@@ -81,25 +82,26 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toast.makeText(this, "Beggining of oncreate", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Beggining of oncreate", Toast.LENGTH_SHORT).show();
         cl = findViewById(R.id.constraint_layout);
         CurCityState = findViewById(R.id.city_state);
         CurCityTime = findViewById(R.id.city_time);
 
         //---------------------
-        recyclerView = findViewById(R.id.hourlyRecycler);
-        // Data to recyclerview adapter
-        DigitAdapter mAdapter = new DigitAdapter(digits, this);
-        recyclerView.setAdapter(mAdapter);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false));
-
-        //Make some data - not always needed - just used to fill list
-        for (int i = 0; i < piStr.length(); i++) {
-            digits.add("" + piStr.charAt(i));
-        }
-        //---------------------
+//        recyclerView = findViewById(R.id.hourlyRecycler);
+//        // Data to recyclerview adapter
+//        DigitAdapter mAdapter = new DigitAdapter(digits, this);
+//        recyclerView.setAdapter(mAdapter);
+//
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+//                LinearLayoutManager.HORIZONTAL, false));
+//
+//        //Make some data - not always needed - just used to fill list
+////        for (int i = 0; i < piStr.length(); i++) {
+//////            digits.add("" + piStr.charAt(i));
+////
+////        }
+//        //---------------------
 
 
         CurSunrise = findViewById(R.id.cur_sunrise);
@@ -122,7 +124,21 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         icon5 = findViewById(R.id.temperature_icon_5);
         icon6 = findViewById(R.id.temperature_icon_6);
         icon1 = findViewById(R.id.temperature_icon_1);
-//        list = new ArrayList<>();
+        recyclerView = findViewById(R.id.hourlyRecycler);
+
+        // Data to recyclerview adapter
+        DigitAdapter mAdapter = new DigitAdapter(digits, this);
+        recyclerView.setAdapter(mAdapter);
+
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+//                LinearLayoutManager.HORIZONTAL, false));
+
+        //Make some data - not always needed - just used to fill list
+//        for (int i = 0; i < piStr.length(); i++) {
+////            digits.add("" + piStr.charAt(i));
+//
+//        }
+        //---------------------
 
         setApiString();
 
@@ -130,12 +146,8 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             ConstraintLayout layout = null;
             ViewGroup rootView=findViewById(R.id.constraint_layout);
             for(int i=0;i<rootView.getChildCount();i++){
-
                 View view=rootView.getChildAt(i);
-
                 if(view.getId()==R.id.city_state){
-
-                    //Do something
                     Toast.makeText(this, "No internet Connection", Toast.LENGTH_LONG).show();
                     Toast.makeText(this, "id:"+view.getId(), Toast.LENGTH_LONG).show();
                     CurCityState.setText("No internet Connection");
@@ -161,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.purple_500)));
 
         //Loading json data using volley
-        queue = Volley.newRequestQueue(this);
+//        queue = Volley.newRequestQueue(this);
         queue = Volley.newRequestQueue(MainActivity.this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, weatherUrl, null, new Response.Listener<JSONObject>() {
             @Override
@@ -170,12 +182,6 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                     t_response=response;
                     //Current data
                     current_data = response.getJSONObject("current");
-
-
-                    //hourly data
-
-//                    hourlyData = response.getJSONArray("hourly");
-
 
                     try {
                         hourlyData =t_response.getJSONArray("hourly");
@@ -188,15 +194,17 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                             hrWeatherArray = hourlyDataObj.getJSONArray("weather");
                             hrWeatherobj = hrWeatherArray.getJSONObject(0);
                             da = hourlyDataObj.getString("dt");
+                            im = hourlyDataObj.getString("dt");
                             te = hourlyDataObj.getString("temp");
-                            im =hrWeatherobj.getString("icon");
+//                            im =hrWeatherobj.getString("icon");
                             des =hrWeatherobj.getString("description");
-//                            weatherList.add(new Weather1(da , te, des , im));
+                            digits.add(new hourlyModel(da , im, te , des));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
+                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this,LinearLayoutManager.HORIZONTAL, false));
 
 
                     //Current.Weather data
@@ -241,19 +249,26 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             }
         });
         queue.add(jsonObjectRequest);
+//        DigitAdapter mAdapter = new DigitAdapter(digits, this);
+//        recyclerView.setAdapter(mAdapter);
+//
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+//                LinearLayoutManager.HORIZONTAL, false));
     }
 
     @Override
     protected void onPause() {
 
         super.onPause();
-        Toast.makeText(getApplicationContext(), "onPause called", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), "onPause called", Toast.LENGTH_LONG).show();
 
 
         SharedPreferences.Editor seditor = mypref.edit();
         seditor.putString("unit",unitIdentifier);
         seditor.apply();
-        Toast.makeText(this, "OnPause_"+ unitIdentifier, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "OnPause_"+ unitIdentifier, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Preferences(Metrics and City) Saved", Toast.LENGTH_SHORT).show();
+
 
     }
 
@@ -268,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         else{
             weatherUrl ="https://api.openweathermap.org/data/2.5/onecall?lat=41.8675766&lon=-87.616232&exclude=minutely&appid=25974a74eff77d6afde92ab471d7f886";
         }
-        Toast.makeText(this, "Set API__"+ unitIdentifier, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Set API__"+ unitIdentifier, Toast.LENGTH_SHORT).show();
 
 //        return url;
     }

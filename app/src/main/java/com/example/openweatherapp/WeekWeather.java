@@ -55,6 +55,7 @@ public class WeekWeather extends AppCompatActivity  implements View.OnClickListe
         setContentView(R.layout.activity_week_weather);
 
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.purple_500)));
+
         recyclerView = findViewById(R.id.week_recycler);
         recyclerView.setAdapter(wAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

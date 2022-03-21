@@ -208,7 +208,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
             android:text="@string/sunrise"
             android:textColor="#FBFAFA"
             android:textSize="18sp"
@@ -220,7 +219,6 @@
             android:id="@+id/cur_sunrise"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:text="-"
             android:textColor="#FBFAFA"
             android:textSize="18sp"
@@ -233,7 +231,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="92dp"
-            android:layout_marginBottom="16dp"
             android:text="Sunset: "
             android:textColor="#FBFAFA"
             android:textSize="18sp"
@@ -245,7 +242,6 @@
             android:id="@+id/cur_sunset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:text="-"
             android:textColor="#FBFAFA"
             android:textSize="18sp"
@@ -438,7 +434,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.65" />
+            app:layout_constraintGuide_percent="0.6" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline4"
@@ -508,7 +504,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.9190405" />
+            app:layout_constraintGuide_percent="0.96" />
 <!--    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
